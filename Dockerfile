@@ -21,7 +21,7 @@ RUN ls -la /src/libs
 # Restaurar dependencias
 RUN dotnet restore
 
-# Copiar el resto del código
+# Copiar el resto del código 
 COPY . ./
 
 # Publicar en modo Release
