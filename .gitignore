@@ -1,0 +1,121 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+bin
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+# Archivos compilados
+bin/
+obj/
+
+# Archivos temporales de VS
+.vs/
+*.user
+*.suo
+
+# Configuración local de IDE
+*.userosscache
+*.sln.docstates
+
+# Logs
+*.log
+
+# Publicaciones
+publish/
+out/
+
+# Paquetes descargados
+*.nupkg
+*.snupkg
+packages/
+
+# Archivos generados
+*.cache
+*.dll
+*.exe
+*.pdb
+*.mdb
+
+# Otros
+Thumbs.db
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Dependencias JS
+node_modules
+bin
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Archivos compilados
+bin/
+obj/
+
+# Archivos temporales de VS
+.vs/
+*.user
+*.suo
+
+# Configuración local de IDE
+*.userosscache
+*.sln.docstates
+
+# Publicaciones
+publish/
+out/
+
+# Paquetes descargados
+*.nupkg
+*.snupkg
+packages/
+
+# Archivos generados
+*.cache
+*.dll
+*.exe
+*.pdb
+*.mdb
+
+# NuGet auto-generados (agregar estos 👇)
+*.nuget.g.props
+*.nuget.g.targets
+
+# Otros
+Thumbs.db
