@@ -11,9 +11,13 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System;
+using System.Security.Cryptography;
+using System.Text;
 using System.Net;
 using System.Net.Mail;
 using System.Security;
+using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Xsl;
@@ -53,6 +57,46 @@ namespace APISietemasdereservas.Controllers
 
             return builder.Build();
 
+        }
+        public static string EncryptFileName(string fileName)
+        {
+            // 1. Sacar extensión del archivo
+            string extension = System.IO.Path.GetExtension(fileName);
+
+            // 2. Normalizar el nombre (sin extensión)
+            string nameWithoutExt = System.IO.Path.GetFileNameWithoutExtension(fileName);
+
+            // 3. Generar hash determinístico
+            using (SHA256 sha256 = SHA256.Create())
+            {
+                byte[] bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(nameWithoutExt));
+
+                // 4. Convertir hash a string (una sola palabra)
+                StringBuilder sb = new StringBuilder();
+                foreach (byte b in bytes)
+                {
+                    sb.Append(b.ToString("x2")); // Hexadecimal
+                }
+
+                // 5. Retornar palabra + extensión
+                return sb.ToString() + extension;
+            }
+        }
+        public static string ObtenerPrimeraUrl(Dictionary<string, object> diccionario)
+        {
+            if (diccionario.TryGetValue("Urls", out var urlsObj))
+            {
+                if (urlsObj is List<string> urlsList && urlsList.Count > 0)
+                {
+                    return urlsList[0];
+                }
+                else if (urlsObj is string[] urlsArray && urlsArray.Length > 0)
+                {
+                    return urlsArray[0];
+                }
+            }
+
+            return string.Empty;
         }
         public static Result ObtenerDatos()
         {

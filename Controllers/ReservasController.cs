@@ -1,12 +1,14 @@
 ﻿using APISietemasdereservas.Models.Request;
 using Google.Apis.Auth;
 using J_W.Estructura;
+using J_W.Herramientas;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.Differencing;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -44,16 +46,14 @@ namespace APISietemasdereservas.Controllers
                 .Value;
             rutasFileSaves = config.GetSection("Configuracion").GetSection("rutaImages").Value;
             rutasFileImages = config.GetSection("Configuracion").GetSection("rutaImages").Value;
-            xsltEnviarReserva= config.GetSection("Configuracion").GetSection("xsltEnviarReserva").Value;
+            xsltEnviarReserva = config.GetSection("Configuracion").GetSection("xsltEnviarReserva").Value;
             xsltReservaCanceled = config.GetSection("Configuracion").GetSection("xsltReservaCanceled").Value;
         }
-
         Dbase dbase = new Dbase();
-        OTPManager otpManager = new OTPManager();
 
         [HttpPost]
         [Route("api/tours/v1.0/CrearNuevoGuia")]
-        public object CrearNuevoGuia(
+        public async Task<object> CrearNuevoGuia(
             IFormFile[] files,
             [FromForm] string idiomas,
             [FromForm] string nombre,
@@ -64,36 +64,17 @@ namespace APISietemasdereservas.Controllers
             [FromForm] string id_user
         )
         {
+            Dictionary<string, object> resultado = new Dictionary<string, object>();
             dbase.Conexion = connectionString;
-            string uniqueFileName = "";
-            string filePath = "";
 
             if ((id_interno == 0 && files == null) || (id_interno == 0 && files.Length == 0))
             {
                 return BadRequest("Debe seleccionar un archivo.");
             }
 
-            if (!Directory.Exists(rutasFileSaves))
-            {
-                Directory.CreateDirectory(rutasFileSaves);
-            }
+            resultado = await MethodsLoadArchs.MethodsLoadArchs.upload_files_to_multiplatam(files, rutasFileSaves);
 
-            if (files.Length != 0)
-            {
-                // Generar un nombre único para el archivo
-                uniqueFileName = $"{Guid.NewGuid()}_{files[0].FileName}";
-                filePath = Path.Combine(rutasFileSaves, uniqueFileName);
-
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                    files[0].CopyTo(stream);
-                }
-
-                if (id_interno != 0 && System.IO.File.Exists(rutaAnterior))
-                {
-                    System.IO.File.Delete(rutaAnterior);
-                }
-            }
+            string ruat = MethodsCompile.ObtenerPrimeraUrl(resultado);
 
             return dbase
                 .Procedure(
@@ -104,10 +85,10 @@ namespace APISietemasdereservas.Controllers
                     nombre,
                     "@experiencia:VARCHAR:1000",
                     experiencia,
-                    "@rutaImagen:VARCHAR:100",
-                    filePath,
-                    "@NombreImagen:VARCHAR:100",
-                    uniqueFileName,
+                    "@rutaImagen:VARCHAR:1000",
+                    ruat,
+                    "@NombreImagen:VARCHAR:1000",
+                    ruat,
                     "@correo:VARCHAR:100",
                     correo,
                     "@id_user:VARCHAR:100",
@@ -120,7 +101,7 @@ namespace APISietemasdereservas.Controllers
 
         [HttpPost]
         [Route("api/tours/v1.0/CrearNuevoProveedor")]
-        public object CrearNuevoProveedor(
+        public async Task<object> CrearNuevoProveedor(
          IFormFile[] files,
          [FromForm] string nombre,
          [FromForm] string experiencia,
@@ -135,42 +116,26 @@ namespace APISietemasdereservas.Controllers
             string uniqueFileName = "";
             string filePath = "";
 
+            Dictionary<string, object> asa = new Dictionary<string, object>();
+
             if ((id_interno == 0 && files == null) || (id_interno == 0 && files.Length == 0))
             {
                 return BadRequest("Debe seleccionar un archivo.");
             }
 
-            if (!Directory.Exists(rutasFileSaves))
-            {
-                Directory.CreateDirectory(rutasFileSaves);
-            }
+            asa = await MethodsLoadArchs.MethodsLoadArchs.upload_files_to_multiplatam(files, rutasFileSaves);
 
-            if (files.Length != 0)
-            {
-                // Generar un nombre único para el archivo
-                uniqueFileName = $"{Guid.NewGuid()}_{files[0].FileName}";
-                filePath = Path.Combine(rutasFileSaves, uniqueFileName);
-
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                    files[0].CopyTo(stream);
-                }
-
-                if (id_interno != 0 && System.IO.File.Exists(rutaAnterior))
-                {
-                    System.IO.File.Delete(rutaAnterior);
-                }
-            }
+            string ruat = MethodsCompile.ObtenerPrimeraUrl(asa);
 
             return dbase
                 .Procedure(
-                    "[GS].[ST_CreateProveedor]",                    
+                    "[GS].[ST_CreateProveedor]",
                     "@nombre:VARCHAR:100",
                     nombre,
                     "@experiencia:VARCHAR:1000",
                     experiencia,
-                    "@rutaImagen:VARCHAR:100",
-                    filePath,
+                    "@rutaImagen:VARCHAR:1000",
+                    ruat,
                     "@cantTours:INT",
                     cantTours,
                     "@NombreImagen:VARCHAR:100",
@@ -427,38 +392,28 @@ namespace APISietemasdereservas.Controllers
 
         [HttpPost]
         [Route("api/tours/v1.0/GuardarTour")]
-        public IActionResult GuardarTour([FromForm] TourRequest request, List<IFormFile> archivos)
+        public async Task<IActionResult> GuardarTour([FromForm] TourRequest request, [FromForm] IFormFile[] archivos)
         {
             try
             {
                 dbase.Conexion = connectionString;
+                Dictionary<string, object> a = new Dictionary<string, object>();
+                string ruat = "";
+                if (archivos.Length != 0){
 
-                if (!Directory.Exists(rutasFileSaves))
-                {
-                    Directory.CreateDirectory(rutasFileSaves);
-                }
-
-                List<string> rutasArchivos = new List<string>();
-
-                if (archivos != null && archivos.Count > 0)
-                {
-                    foreach (var archivo in archivos)
+                    a = await MethodsLoadArchs.MethodsLoadArchs.upload_files_to_multiplatam(archivos, rutasFileSaves);
+                    var urls = a["Urls"] as List<string>;
+                    if (urls != null)
                     {
-                        string extension = Path.GetExtension(archivo.FileName);
-                        string uniqueName = Guid.NewGuid().ToString() + extension;
-                        string filePath = Path.Combine(rutasFileSaves, uniqueName); 
-                        using (var stream = new FileStream(filePath, FileMode.Create))
-                        {
-                            archivo.CopyTo(stream);
-                        }
-                        rutasArchivos.Add(filePath);
+                        ruat = JsonConvert.SerializeObject(urls); // JSON limpio
                     }
+                     
                 }
-
+                
                 string fechasJson = request.FechasMasi;
                 string idiomas = string.Join(",", request.Idioma);
                 string itinerarioJson = request.Itinerario;
-                string archivosJson = Newtonsoft.Json.JsonConvert.SerializeObject(rutasArchivos);
+                string archivosJson = ruat;
 
                 var resultado = dbase
                     .Procedure(
@@ -496,7 +451,7 @@ namespace APISietemasdereservas.Controllers
                         "@infoAdicional:TEXT",
                         request.InfoAdicional,
                         "@portadaTour:VARCHAR:500",
-                        request.portadaTour,
+                       request.portadaTour,
                         "@id_interno:VARCHAR:10",
                         request.id_interno,
                         "@Id_Usuario:VARCHAR:500",
@@ -1212,23 +1167,16 @@ namespace APISietemasdereservas.Controllers
         {
             string imagePath = null;
             string uniqueFileName = null;
+            Dictionary<string, object> asa = new Dictionary<string, object>();
             dbase.Conexion = connectionString;
-            if (photos != null && photos.Length > 0)
+
+            if(photos.Length != 0)
             {
-                if (!Directory.Exists(rutasFileImages))
-                {
-                    Directory.CreateDirectory(rutasFileImages);
-                }
+                asa = await MethodsLoadArchs.MethodsLoadArchs.upload_files_to_multiplatam(photos, rutasFileSaves);
 
-                uniqueFileName = $"{Guid.NewGuid()}_{photos[0].FileName}";
-                imagePath = Path.Combine(rutasFileImages, uniqueFileName);
-
-                using (var stream = new FileStream(imagePath, FileMode.Create))
-                {
-                    await photos[0].CopyToAsync(stream);
-                }
+                imagePath = JsonConvert.SerializeObject(asa["Urls"]);
             }
-
+             
             try
             {
                 var result = dbase
@@ -1238,7 +1186,7 @@ namespace APISietemasdereservas.Controllers
                         rating,
                         "@OpinionText:VARCHAR:1000",
                         opinionText,
-                        "@ImagePath:VARCHAR:1000",
+                        "@ImagePath:VARCHAR:-1",
                         imagePath,
                         "@id_Tour:VARCHAR:10",
                         id_Tour,
