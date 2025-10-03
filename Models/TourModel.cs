@@ -56,7 +56,9 @@ public class TourRequest
     public string id_user { get; set; }
     public string id_interno { get; set; }
     public string portadaTour { get; set; }
+
     public string Url { get; set; }
+    public string id_cuidad { get; set; }
     public bool free { get; set; }
 }
 public class ConfiguracionModel

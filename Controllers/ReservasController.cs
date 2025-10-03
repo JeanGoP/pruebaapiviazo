@@ -459,7 +459,8 @@ namespace APISietemasdereservas.Controllers
                         "@archivos:JSON",
                         archivosJson,
                         "@free:BIT",
-                        request.free
+                        request.free , "@id_ciUdad:VARCHAR:100",
+                        request.id_cuidad
                     )
                     .RunScalar();
 
@@ -923,6 +924,47 @@ namespace APISietemasdereservas.Controllers
                 );
             }
         }
+        [HttpPost]
+        [Route("api/tours/v1.0/listCiudades")]
+        public IActionResult ListCiudades()
+        {
+            try
+            {
+                dbase.Conexion = connectionString;
+
+                Result result = dbase.Procedure("[GS].[ST_ListCiudad]").RunData();
+
+                if (result?.Data?.Tables.Count == 0 || result.Data.Tables[0].Rows.Count == 0)
+                {
+                    return Ok(
+                        new
+                        {
+                            Error = false,
+                            Message = "No se encontraron datos en la tabla.",
+                            Data = "",
+                        }
+                    );
+                }
+
+                var data = MethodsCompile.ConvertDataTableToJson(result.Data.Tables[0]);
+
+                return Ok(new { Error = false, Data = data });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(
+                    500,
+                    new
+                    {
+                        Error = false,
+                        Message = "Ocurrió un error al listar las carpetas.",
+                        Details = ex.Message,
+                    }
+                );
+            }
+        }
+
+
 
         [HttpPost]
         [Route("api/tours/v1.0/listPersonasReservas")]
