@@ -318,10 +318,11 @@ namespace APISietemasdereservas.Controllers
         public object EliminarImg([FromForm] string ruta, [FromForm] string TourID)
         {
             dbase.Conexion = connectionString;
-            if (System.IO.File.Exists(ruta))
-            {
-                System.IO.File.Delete(ruta);
-            }
+
+            var uri = new Uri(ruta);
+            string key = uri.AbsolutePath.TrimStart('/'); 
+            MethodsLoadArchs.MethodsLoadArchs.EliminarArchivoEnS3(key); 
+
             return dbase
                 .Procedure("[GS].[ST_DeleteImgTours]", "@ruta:VARCHAR:100", ruta, "@TourID:VARCHAR:100", TourID)
                 .RunScalar();
