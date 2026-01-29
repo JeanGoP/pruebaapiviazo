@@ -390,6 +390,23 @@ namespace APISietemasdereservas.Controllers
             return dbase.Procedure("[GS].[ST_EliminarProveedor]", "@id:VARCHAR:100", id).RunScalar();
         }
 
+        [HttpPost]
+        [Route("api/tours/v1.0/EliminarTour")]
+        public object EliminarTour([FromForm] int id)
+        {              
+            try
+            {
+                dbase.Conexion = connectionString; 
+
+                var resultado = dbase.Procedure("[GS].[ST_EliminarTour]", "@TourID:VARCHAR:100", id).RunScalar();
+
+                return Ok(new { resultado });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = "Error al guardar el tour", error = ex.Message });
+            }
+        }
 
         [HttpPost]
         [Route("api/tours/v1.0/GuardarTour")]
