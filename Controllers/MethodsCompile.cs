@@ -259,12 +259,16 @@ namespace APISietemasdereservas.Controllers
               string idioma, 
               string nombrePuntoEncuentro,
               string descripcionPuntoEncuentro,
-              string linkMapsPuntoEncuentro
+              string linkMapsPuntoEncuentro,
+              string correoContacto,
+              string telefonoContacto
           )
         {
             try
             {
                 Result ConfigInit = ObtenerDatos();
+
+                string linkWhatsapp = $"https://wa.me/{telefonoContacto.Replace("+", "").Replace(" ", "")}";
 
                 string subject = idioma == "es"
                     ? "¡Tu reserva ha sido confirmada!"
@@ -293,6 +297,14 @@ namespace APISietemasdereservas.Controllers
                 string textoFooter = idioma == "es"
                     ? "Este es un correo informativo, por favor no responda a este mensaje."
                     : "This is an informational email, please do not reply to this message.";
+                string textoContactoTitulo = idioma == "es" ? "Servicio al Cliente" : "Customer Service";
+                string textoContactoMensaje = idioma == "es"
+                    ? "Si tienes alguna duda o necesitas ayuda, puedes contactarnos por los siguientes medios:"
+                    : "If you have any questions or need assistance, you can contact us through the following channels:";
+
+                string textoCorreo = idioma == "es" ? "Correo" : "Email";
+                string textoTelefono = idioma == "es" ? "Teléfono / WhatsApp" : "Phone / WhatsApp";
+
 
                 string htmlBody = $@"
                 <html lang='{idioma}'>
@@ -390,10 +402,34 @@ namespace APISietemasdereservas.Controllers
 
                                     <a href='{linkMapsPuntoEncuentro}' class='button'>{textoBoton}</a>
                                 </div>
+                            
                             </div>
-                            <div class='footer'>
+                     
+
+                            <div class=""footer"">
+       <hr style=""margin:30px 0; border:none; border-top:1px solid #ddd;"" />
+
+                            <div class=""details"">
+                                <h3>📞 {textoContactoTitulo}</h3>
+                                <p>{textoContactoMensaje}</p>
+
+                                <p>
+                                    <strong>{textoCorreo}:</strong>
+                                    <a href=""mailto:{correoContacto}"" style=""color:#082338; text-decoration:underline;"">
+                                        {correoContacto}
+                                    </a>
+                                </p>
+
+                                <p>
+                                    <strong>{textoTelefono}:</strong>
+                                    <a href=""{linkWhatsapp}"" target=""_blank"" style=""color:#082338; text-decoration:underline;"">
+                                        {telefonoContacto}
+                                    </a>
+                                </p>
+                            </div>
                                 <p>{textoFooter}</p>
                             </div>
+
                         </div>
                     </body>
                 </html>";
@@ -428,23 +464,34 @@ namespace APISietemasdereservas.Controllers
             }
         }
         public static bool NotificarConfirmacionGuia(
-      string idReserva,
-            string emailGuia,
-      string nombreGuia,
-      string nombreCliente,
-      string nombreTour,
-      string nombreTourEN,
-      string fecha,
-      string hora,
-      string idioma,
-      string nombrePuntoEncuentro,
-      string descripcionPuntoEncuentro,
-      string linkMapsPuntoEncuentro
-  )
+              string idReserva,
+              string emailGuia,
+              string nombreGuia,
+              string nombreCliente,
+              string nombreTour,
+              string nombreTourEN,
+              string fecha,
+              string hora,
+              string idioma,
+              string nombrePuntoEncuentro,
+              string descripcionPuntoEncuentro,
+              string telefonoCliente,   
+              string linkMapsPuntoEncuentro
+          )
         {
             try
             {
                 Result ConfigInit = ObtenerDatos();
+
+                string textoTelefonoCliente = idioma == "es"
+                    ? "Teléfono del cliente"
+                    : "Client phone";
+
+                string telefonoClienteLimpio = telefonoCliente
+                .Replace(" ", "")
+                .Replace("+", "");
+
+                string linkWhatsappCliente = $"https://wa.me/{telefonoClienteLimpio}";
 
                 string subject = idioma == "es"
                     ? "¡Nueva reserva asignada a tu tour!"
@@ -562,6 +609,13 @@ namespace APISietemasdereservas.Controllers
                             <p>{mensajeIntro}</p>
                             <p><strong>CODIGO/CODE:</strong> {SecurityElement.Escape(idReserva)}</p>                            
                             <p><strong>{textoCliente}:</strong> {SecurityElement.Escape(nombreCliente)}</p>
+                            <p>
+                                <strong>{textoTelefonoCliente}:</strong>
+                                <a href=""{linkWhatsappCliente}"" style=""color:#082338; text-decoration:underline;"">
+                                    {SecurityElement.Escape(telefonoCliente)}
+                                </a>
+                            </p>
+
                             <p><strong>{textoTour}:</strong> {SecurityElement.Escape(nombreTour)}</p>
                             <p><strong>{textoFecha}:</strong> {SecurityElement.Escape(fecha)}</p>
                             <p><strong>{textoHora}:</strong> {SecurityElement.Escape(hora)}</p>

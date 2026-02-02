@@ -109,6 +109,7 @@ namespace APISietemasdereservas.Controllers
          [FromForm] int cantTours,
          [FromForm] string rutaAnterior,
          [FromForm] string correo,
+         [FromForm] string numertel,
          [FromForm] string id_user
      )
         {
@@ -142,6 +143,8 @@ namespace APISietemasdereservas.Controllers
                     uniqueFileName,
                     "@correo:VARCHAR:100",
                     correo,
+                    "@numertel:VARCHAR:100",
+                    numertel,
                     "@id_user:VARCHAR:100",
                     id_user,
                     "@id:VARCHAR:100",
@@ -609,6 +612,8 @@ namespace APISietemasdereservas.Controllers
                         var nombreGuia = resultado.Row["nombreGuia"].ToString();
                         var ECorreoGuia = resultado.Row["ECorreoGuia"].ToString();
                         var idReserva = resultado.Row["idReserva"].ToString();
+                        var telefonoContactoGUIA = resultado.Row["telefonoContacto"].ToString();
+                        var telefonoCliente = resultado.Row["telefonoCliente"].ToString(); 
 
                         enviado = MethodsCompile.NotificarConfirmacionReserva(
                             email,
@@ -620,7 +625,9 @@ namespace APISietemasdereservas.Controllers
                             idioma,
                             puntodeE,
                             puntodeE_Descp,
-                            LinkPagina
+                            LinkPagina,
+                            ECorreoGuia,
+                            telefonoContactoGUIA
                         );
                         enviado2 = MethodsCompile.NotificarConfirmacionGuia(
                          idReserva,
@@ -634,6 +641,7 @@ namespace APISietemasdereservas.Controllers
                          idioma,
                          puntodeE,
                          puntodeE_Descp,
+                         telefonoCliente,
                          LinkPagina
                      );
         
