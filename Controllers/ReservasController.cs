@@ -751,6 +751,93 @@ namespace APISietemasdereservas.Controllers
             }
         }
 
+
+        private List<AgendaOrderDto> ObtenerOrdenesPorAgenda(long tourId)
+        {
+            dbase.Conexion = connectionString;
+
+            Result result = dbase
+                .Procedure("[GS].[ST_ListReservasByTour]", "@id_tour:BIGINT", tourId)
+                .RunData();
+
+            var orders = new List<AgendaOrderDto>();
+
+            if (result?.Data?.Tables.Count == 0 || result.Data.Tables[0].Rows.Count == 0)
+                return orders;
+
+            foreach (DataRow row in result.Data.Tables[0].Rows)
+            {
+                orders.Add(new AgendaOrderDto
+                {
+                    Id = row["id"].ToString(),
+                    ProductCode = row["productCode"].ToString(),
+                    Date = row["date"].ToString(),
+                    Adultos = Convert.ToInt32(row["adultos"]),
+                    Ninos = Convert.ToInt32(row["ninos"]),
+                    Customer = row["customer"].ToString(),
+                    Telefono = row["telefono"].ToString(),
+                    Status = row["status"].ToString()
+                });
+            }
+
+            return orders;
+        }
+
+
+        [HttpPost]
+        [Route("api/tours/v1.0/listAgenda2")]
+        public List<AgendaDto> ListAgenda2(string idUser)
+        {
+            dbase.Conexion = connectionString;
+
+            Result result = dbase
+                .Procedure(
+                    "[GS].[ST_ListAgendaListados]",
+                    "@id_user:VARCHAR:10",
+                    idUser
+                )
+                .RunData();
+
+            var agendaList = new List<AgendaDto>();
+
+            if (result?.Data?.Tables.Count == 0 || result.Data.Tables[0].Rows.Count == 0)
+                return agendaList;
+
+            foreach (DataRow row in result.Data.Tables[0].Rows)
+            {
+                var agenda = new AgendaDto
+                {
+                    Id = Convert.ToInt64(row["id"]),
+                    Fecha = row["fecha"].ToString(),
+                    TourID = row["TourID"].ToString(),
+                    FechaVisible = row["fechaVisble"].ToString(),
+                    Horario = row["horario"].ToString(),
+                    Hora = row["hora"].ToString(),
+                    Duracion = row["duracion"].ToString(),
+                    Title = row["title"].ToString(),
+                    CantidadInscrito = row["cantidadInscrito"].ToString(),
+                    CantidadMaxima = Convert.ToInt32(row["cantidadMaxima"]),
+                    Seats = row["seats"].ToString(),
+                    Flag = row["flag"].ToString(),
+                    Idioma = row["idioma"].ToString(),
+                    ReservasConfirmadas = Convert.ToInt32(row["reservasConfirmadas"]),
+                    ReservasPendientes = Convert.ToInt32(row["reservasPendientes"]),
+                    ReservasCanceladas = Convert.ToInt32(row["reservasCanceladas"]),
+                    EstadoReserva = row["EstadoReserva"].ToString()
+                };
+                 
+                agenda.Orders = ObtenerOrdenesPorAgenda(agenda.Id);
+
+                agendaList.Add(agenda);
+            }
+
+            return agendaList;
+        }
+
+
+
+
+
         [HttpPost]
         [Route("api/tours/v1.0/ValidarOTP")]
         public IActionResult ValidarOTP([FromBody] OTPRequest request)

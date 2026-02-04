@@ -113,3 +113,37 @@ public class ItinerarioItem
     public string Hora { get; set; }
     public string Descripcion { get; set; }
 }
+
+public class AgendaDto
+{
+    public long Id { get; set; }
+    public string TourID { get; set; }
+    public string Fecha { get; set; }
+    public string FechaVisible { get; set; }
+    public string Horario { get; set; }
+    public string Hora { get; set; }
+    public string Duracion { get; set; }
+    public string Title { get; set; }
+    public string CantidadInscrito { get; set; }
+    public int CantidadMaxima { get; set; }
+    public string Seats { get; set; }
+    public string Flag { get; set; }
+    public string Idioma { get; set; }
+    public int ReservasConfirmadas { get; set; }
+    public int ReservasPendientes { get; set; }
+    public int ReservasCanceladas { get; set; }
+    public string EstadoReserva { get; set; }
+
+    public List<AgendaOrderDto> Orders { get; set; } = new();
+}
+public class AgendaOrderDto
+{
+    public string Id { get; set; }
+    public string ProductCode { get; set; }
+    public string Date { get; set; }
+    public int Adultos { get; set; }
+    public int Ninos { get; set; }
+    public string Customer { get; set; }
+    public string Telefono { get; set; }
+    public string Status { get; set; }
+}
