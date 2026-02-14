@@ -137,7 +137,11 @@ public class OTPManager
             
             var xslt = new XslCompiledTransform();
             var configuracion = GetConfiguration();
-            var xsltEnviarOTP = configuracion.GetSection("Configuracion").GetSection("xsltEnviarOTP").Value;
+            var xsltEnviarOTP = Path.Combine(
+    Directory.GetCurrentDirectory(),
+    "Properties",
+    "TemplateSendingEmailOTP.xslt"
+);
 
             xslt.Load(xsltEnviarOTP);
 
