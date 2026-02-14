@@ -127,32 +127,7 @@ public class OTPManager
     {
         try
         {
-            
             Result ConfigInit = MethodsCompile.ObtenerDatos();
-
-            
-            var xmlDoc = new XmlDocument();
-            xmlDoc.LoadXml($"<top><DataInfo otp='{otpCode}'/></top>");
-
-            
-            var xslt = new XslCompiledTransform();
-            var configuracion = GetConfiguration();
-            var xsltEnviarOTP = Path.Combine(
-   AppContext.BaseDirectory,
-    "Properties",
-    "TemplateSendingEmailOTP.xslt"
-);
-
-            xslt.Load(xsltEnviarOTP);
-
-            
-            string htmlBody;
-            using (var stringWriter = new StringWriter())
-            using (var xmlWriter = XmlWriter.Create(stringWriter, xslt.OutputSettings))
-            {
-                xslt.Transform(xmlDoc, xmlWriter);
-                htmlBody = stringWriter.ToString();
-            }
 
             string emai1l = ConfigInit.Row["UsuarioCorreo"].ToString();
             string nombreplatrom = ConfigInit.Row["NombrePlatForm"].ToString();
@@ -160,11 +135,28 @@ public class OTPManager
             string proveedorCorreo = ConfigInit.Row["proveedorCorreo"].ToString();
             var puerto = Convert.ToInt32(ConfigInit.Row["puerto"]);
             bool EnableSsl = Convert.ToBoolean(ConfigInit.Row["EnableSsl"]);
-            
+
             var fromAddress = new MailAddress(emai1l, nombreplatrom);
             var toAddress = new MailAddress(email);
             string fromPassword = CodigodeInstagram;
-            string subjectFinal = "Codigo OTP | Code OTP";
+            string subjectFinal = "Código OTP | Code OTP";
+
+            // 🔥 HTML limpio y responsive básico
+            string htmlBody = $@"
+        <html>
+        <body style='font-family: Arial, sans-serif; background-color:#f4f6f9; padding:20px;'>
+            <div style='max-width:600px; margin:auto; background:white; padding:30px; border-radius:10px; text-align:center;'>
+                <h2 style='color:#1e88e5;'>Verificación de Seguridad</h2>
+                <p>Tu código de verificación es:</p>
+                <div style='font-size:32px; font-weight:bold; letter-spacing:5px; margin:20px 0; color:#333;'>
+                    {otpCode}
+                </div>
+                <p>Este código expirará en unos minutos.</p>
+                <hr style='margin:30px 0;'/>
+                <small style='color:#888;'>Si no solicitaste este código, puedes ignorar este mensaje.</small>
+            </div>
+        </body>
+        </html>";
 
             var smtp = new SmtpClient
             {
@@ -191,6 +183,7 @@ public class OTPManager
             return false;
         }
     }
+
     public static bool ConfirmacionReservaMail(string email, string Nombre, string NombreTour, string fecha, string hora, string idreserva)
     {
         try
