@@ -617,7 +617,9 @@ namespace APISietemasdereservas.Controllers
                         var ECorreoGuia = resultado.Row["ECorreoGuia"].ToString();
                         var idReserva = resultado.Row["idReserva"].ToString();
                         var telefonoContactoGUIA = resultado.Row["telefonoContacto"].ToString();
-                        var telefonoCliente = resultado.Row["telefonoCliente"].ToString(); 
+                        var telefonoCliente = resultado.Row["telefonoCliente"].ToString();
+                        var ninos = resultado.Row["ninos"].ToString();
+                        var adultos = resultado.Row["adultos"].ToString();
 
                         enviado = MethodsCompile.NotificarConfirmacionReserva(
                             email,
@@ -646,7 +648,9 @@ namespace APISietemasdereservas.Controllers
                          puntodeE,
                          puntodeE_Descp,
                          telefonoCliente,
-                         LinkPagina
+                         LinkPagina,
+                         adultos,
+                         ninos
                      );
         
                     }

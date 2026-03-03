@@ -476,7 +476,9 @@ namespace APISietemasdereservas.Controllers
               string nombrePuntoEncuentro,
               string descripcionPuntoEncuentro,
               string telefonoCliente,   
-              string linkMapsPuntoEncuentro
+              string linkMapsPuntoEncuentro,
+              string adultos,
+              string ninos
           )
         {
             try
@@ -509,6 +511,8 @@ namespace APISietemasdereservas.Controllers
                 string textoTour = idioma == "es" ? "TOUR" : "TOUR";
                 string textoFecha = idioma == "es" ? "FECHA" : "DATE";
                 string textoHora = idioma == "es" ? "HORA" : "TIME";
+                string textoninos = idioma == "es" ? "Niños" : "Children";
+                string textodult = idioma == "es" ? "Adultos" : "Adults";
 
                 string textoPuntoTitulo = idioma == "es" ? "Punto de Encuentro" : "Meeting Point";
                 string textoNombre = idioma == "es" ? "Nombre" : "Name";
@@ -619,6 +623,8 @@ namespace APISietemasdereservas.Controllers
                             <p><strong>{textoTour}:</strong> {SecurityElement.Escape(nombreTour)}</p>
                             <p><strong>{textoFecha}:</strong> {SecurityElement.Escape(fecha)}</p>
                             <p><strong>{textoHora}:</strong> {SecurityElement.Escape(hora)}</p>
+                            <p><strong>{textodult}:</strong> {SecurityElement.Escape(adultos)}</p>
+                            <p><strong>{textoninos}:</strong> {SecurityElement.Escape(ninos)}</p>
 
                             <h3 style='margin-top:30px;'>🗺 {textoPuntoTitulo}</h3>
                             <p><strong>{textoNombre}:</strong> {SecurityElement.Escape(nombrePuntoEncuentro)}</p>
