@@ -90,9 +90,12 @@ public class ReservaRequest
     public string HoraSeleccionada { get; set; }
     public string idiomaselected { get; set; }
     public int NumeroAdultos { get; set; }
+
     public int NumeroNinos { get; set; }
     public string Telefono { get; set; }
     public bool AceptaTerminos { get; set; }
+    public bool isInvited { get; set; }
+    public string nombreuser { get; set; }
     public string id_user { get; set; }
     public int id_tour { get; set; }
     public string email { get; set; }

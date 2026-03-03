@@ -556,12 +556,11 @@ namespace APISietemasdereservas.Controllers
                 bool enviado2 = true;
 
 
-                if (reserva.isconfirmOTP != "1")
+                if (reserva.isconfirmOTP != "1" && !reserva.isInvited)
                 {
                     OTPManager.SendOTP_WithXslt(reserva.email, otpCode);
                 }
-
-                //Se COmenta a peticion del cliente
+ 
                 Result resultado = dbase
                     .Procedure(
                         "[GS].[ST_CreateReserva]",
@@ -577,15 +576,20 @@ namespace APISietemasdereservas.Controllers
                         reserva.NumeroNinos,
                         "@telefono:VARCHAR",
                         reserva.Telefono,
+                        "@nombreuser:VARCHAR",
+                        reserva.nombreuser,
                         "@aceptaTerminos:BIT",
                         reserva.AceptaTerminos,
+                        "@invitado:BIT",
+                        reserva.isInvited,
                         "@id_user:VARCHAR",
                         reserva.id_user,
                         "@id_tour:INT",
                         reserva.id_tour,
                         "@id_reserva:VARCHAR:100",
                         reserva.id_reserva,
-                        //"@email:VARCHAR:100", reserva.email,
+                        "@email:VARCHAR:100",
+                        reserva.email,
                         "@OTP:INT",
                         otpCode,
                         "@OTP_Expiration:DATETIME",
